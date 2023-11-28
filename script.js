@@ -1,3 +1,4 @@
+// const stringSimilarity = require('string-similarity');
 var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition
 var SpeechGrammarList = SpeechGrammarList || window.webkitSpeechGrammarList
 var SpeechRecognitionEvent = SpeechRecognitionEvent || webkitSpeechRecognitionEvent
@@ -84,9 +85,12 @@ recognition.onresult = function(event) {
   // These also have getters so they can be accessed like arrays.
   // The second [0] returns the SpeechRecognitionAlternative at position 0.
   // We then return the transcript property of the SpeechRecognitionAlternative object
-  var spanishColor = event.results[0][0].transcript;
-  var englishColor = colorTranslations[spanishColor];
-  diagnostic.textContent = 'Result received: ' + spanishColor + '.';
+  var spanishColor = event.results[0][0].transcript.toLowerCase();
+  const matches = stringSimilarity.findBestMatch(spanishColor, spanishColors);
+  const bestSpanishColor = matches.bestMatch.target;
+  console.log('heard spanish word', spanishColor, 'bestSpanishColor: ' + bestSpanishColor);
+  var englishColor = colorTranslations[bestSpanishColor];
+  diagnostic.textContent = 'I heard ' + spanishColor + '. I guess you mean ' + bestSpanishColor + '.';
   bg.style.backgroundColor = englishColor;
   console.log('heard spanishColor: ' + spanishColor, 'change to englishColor: ' + englishColor);
   console.log('Confidence: ' + event.results[0][0].confidence);
